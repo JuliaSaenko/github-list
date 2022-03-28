@@ -4,10 +4,11 @@ import { StarIcon } from '@heroicons/react/outline';
 type Owner = {
     html_url: string;
     login: string;
-    avatar_url: string | null;
+    avatar_url: string;
 };
 
 export type Repository = {
+    id?: number;
     html_url: string;
     name: string;
     stargazers_count: number;
@@ -15,7 +16,7 @@ export type Repository = {
     owner: Owner;
 };
 
-function RepoItem({ html_url, name, stargazers_count, description, owner }: any) {
+function RepoItem({ html_url, name, stargazers_count, description, owner }: Repository) {
     return (
         <li className="pt-2 pb-4 border-dashed border-b-2 border-indigo-600">
             <div className="flex items-baseline mb-1">

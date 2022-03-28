@@ -2,24 +2,19 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import RepoItem, { Repository } from './RepoItem';
 
-type RepoItem = {
-    id: number;
-    repo: Repository;
-};
-
 function RepoList() {
-    const [repositories, setRepositories] = useState([]);
+    const [repositories, setRepositories] = useState<Repository[]>([]);
     const [searchTerm, setSearchTerm] = useState('react');
     const [delayError, setDelayError] = useState(false);
 
     useEffect(() => {
         axios
-            .get(`https://api.github.com/search/repositories?q=/${searchTerm}&sort=stars&order=desc`)
+            .get<{ items: Repository[] }>(
+                `https://api.github.com/search/repositories?q=/${searchTerm}&sort=stars&order=desc`
+            )
             .then((response) => {
-                const items = response.data.items.map((repoItem: any) => {
-                    return <RepoItem key={repoItem.id} repo={repoItem} />;
-                });
-                setRepositories(items);
+                const data = response.data.items;
+                setRepositories(data);
             })
             .catch((err) => {
                 if (err.response.status === 403) setDelayError(true);
@@ -45,7 +40,11 @@ function RepoList() {
                     GitHub allows limited number of request, please try again later :(
                 </div>
             ) : (
-                <ul className="repoList">{repositories}</ul>
+                <ul className="repoList">
+                    {repositories.map((repository) => {
+                        return <RepoItem key={repository.id} {...repository} />;
+                    })}
+                </ul>
             )}
         </div>
     );
